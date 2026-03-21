@@ -9,7 +9,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none; /* 避免拖动影响体验，教师编辑时保留文本选择 */
         }
 
         body {
@@ -22,7 +21,6 @@
             align-items: center;
         }
 
-        /* 主容器 */
         .app-wrapper {
             max-width: 1300px;
             width: 100%;
@@ -30,10 +28,8 @@
             border-radius: 72px;
             box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2), 0 0 0 12px #ffdd99, 0 0 0 18px #f7b05e;
             overflow: hidden;
-            transition: all 0.2s ease;
         }
 
-        /* 头部区域 */
         .header {
             background: #ffeed5;
             padding: 15px 25px;
@@ -86,7 +82,6 @@
             box-shadow: 0 1px 0 #9b521e;
         }
 
-        /* 菜单导航栏 */
         .menu-nav {
             display: flex;
             background: #fff2e2;
@@ -104,9 +99,8 @@
             font-weight: bold;
             color: #b45a2c;
             cursor: pointer;
-            transition: 0.1s;
             font-family: inherit;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: 0.1s;
         }
         .menu-btn.active {
             background: #ffa559;
@@ -115,7 +109,6 @@
             transform: translateY(-2px);
         }
 
-        /* 页面容器 */
         .page-container {
             padding: 25px 30px 35px;
             min-height: 550px;
@@ -132,7 +125,6 @@
             to { opacity: 1; transform: translateY(0);}
         }
 
-        /* 通用卡片样式 */
         .card {
             background: #fffaf2;
             border-radius: 48px;
@@ -152,7 +144,6 @@
             box-shadow: 0 4px 0 #c16f1a;
         }
 
-        /* 朗读 */
         .read-area {
             text-align: center;
         }
@@ -187,7 +178,6 @@
             box-shadow: 0 2px 0 #a45116;
         }
 
-        /* 笔顺区域 - 全新严格顺序 使用标准笔画序列绘制+演示 */
         .stroke-container {
             display: flex;
             flex-direction: column;
@@ -255,13 +245,12 @@
             box-shadow: 0 0 0 2px white, 0 0 0 4px #ffa559;
         }
 
-        /* 听写新样式: 听声音选生字 */
         .listen-area {
             text-align: center;
         }
         .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 20px;
             margin: 30px 0;
         }
@@ -288,7 +277,7 @@
             border-radius: 50px;
             padding: 12px;
         }
-        /* 配对 */
+
         .pair-game {
             display: flex;
             flex-direction: column;
@@ -327,7 +316,7 @@
             visibility: hidden;
             display: none;
         }
-        /* 教师编辑面板 */
+
         .teacher-panel {
             background: #fff0e0;
             border-radius: 48px;
@@ -357,14 +346,16 @@
             display: inline-flex;
             gap: 8px;
             align-items: baseline;
+            flex-wrap: wrap;
         }
         .edit-word-item input {
-            width: 70px;
+            width: 80px;
             font-size: 1rem;
             border-radius: 30px;
             border: 1px solid #ffb462;
             text-align: center;
             background: white;
+            padding: 4px 8px;
         }
         .edit-controls {
             display: flex;
@@ -383,9 +374,11 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        .teacher-mode-active {
-            background: #ffd28f;
-            border-left: 8px solid #e67e22;
+        .password-input input {
+            padding: 8px 16px;
+            border-radius: 40px;
+            border: 1px solid #ffb462;
+            font-family: inherit;
         }
         footer {
             text-align: center;
@@ -397,6 +390,7 @@
         @media (max-width: 680px) {
             .page-container { padding: 18px; }
             .big-word { font-size: 3.5rem; }
+            .option-card { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -413,7 +407,6 @@
         </div>
     </div>
 
-    <!-- 菜单栏 -->
     <div class="menu-nav">
         <button class="menu-btn" data-page="read">🔊 朗读</button>
         <button class="menu-btn" data-page="stroke">✍️ 笔顺</button>
@@ -422,7 +415,6 @@
     </div>
 
     <div class="page-container">
-        <!-- 朗读页面 -->
         <div id="page-read" class="page">
             <div class="card">
                 <h2>📣 大声朗读</h2>
@@ -434,14 +426,13 @@
             </div>
         </div>
 
-        <!-- 笔顺页面 严格笔顺 -->
         <div id="page-stroke" class="page">
             <div class="card">
                 <h2>✍️ 正确笔顺练习</h2>
                 <div class="stroke-container">
                     <div class="word-selector" id="strokeCharSelector"></div>
                     <div class="stroke-canvas-box">
-                        <canvas id="strokeCanvas" width="300" height="300" style="width:100%; max-width:300px; aspect-ratio:1/1"></canvas>
+                        <canvas id="strokeCanvas" width="300" height="300"></canvas>
                     </div>
                     <div class="stroke-controls">
                         <button class="ctrl-btn" id="clearCanvasBtn">🧽 清空画板</button>
@@ -452,7 +443,6 @@
             </div>
         </div>
 
-        <!-- 听写页面 - 听声音选生字 -->
         <div id="page-listen" class="page">
             <div class="card">
                 <h2>🎵 听声音 找生字</h2>
@@ -464,7 +454,6 @@
             </div>
         </div>
 
-        <!-- 配对页面 -->
         <div id="page-pair" class="page">
             <div class="card">
                 <h2>🧩 生字 & 拼音 配对</h2>
@@ -474,11 +463,10 @@
             </div>
         </div>
 
-        <!-- 教师编辑面板 (默认隐藏) -->
         <div id="teacherPanel" style="display: none;" class="teacher-panel">
             <h3>👩‍🏫 教师模式 - 编辑生字库</h3>
             <div class="password-input">
-                <input type="password" id="teacherPwd" placeholder="输入教师密码" style="padding:8px 16px; border-radius:40px; border:1px solid #ffb462;">
+                <input type="password" id="teacherPwd" placeholder="输入教师密码">
                 <button id="unlockEditBtn" class="ctrl-btn">🔓 解锁编辑</button>
                 <span id="pwdError" style="color:red; font-size:0.8rem;"></span>
             </div>
@@ -489,36 +477,35 @@
                     <button id="saveWordBankBtn" class="ctrl-btn save-btn">💾 保存修改</button>
                     <button id="exitTeacherMode" class="ctrl-btn">🚪 退出教师模式</button>
                 </div>
-                <p style="margin-top:12px; font-size:0.8rem;">⚠️ 每个生字需填写汉字和拼音，保存后所有页面立即更新 (笔顺仅支持预设汉字,新增字会使用默认笔顺展示)</p>
+                <p style="margin-top:12px; font-size:0.8rem;">⚠️ 每个生字需填写汉字和拼音，保存后所有页面立即更新</p>
             </div>
         </div>
     </div>
-    <footer>🐣 依据马来西亚二年级课本 | 教师模式密码: 123456 (演示用) 可随意修改字库</footer>
+    <footer>🐣 依据马来西亚二年级课本 | 教师模式密码: 123456</footer>
 </div>
 
 <script>
-    // ----------------------------- 初始字库 (马来西亚二年级核心) -----------------------------
+    // 字库
     let wordBank = [
-        { char: "朋", pinyin: "péng" },
-        { char: "友", pinyin: "yǒu" },
-        { char: "校", pinyin: "xiào" },
-        { char: "学", pinyin: "xué" },
-        { char: "习", pinyin: "xí" },
-        { char: "快", pinyin: "kuài" },
-        { char: "乐", pinyin: "lè" },
-        { char: "读", pinyin: "dú" },
-        { char: "书", pinyin: "shū" }
+        { char: "朋", pinyin: "peng" },
+        { char: "友", pinyin: "you" },
+        { char: "校", pinyin: "xiao" },
+        { char: "学", pinyin: "xue" },
+        { char: "习", pinyin: "xi" },
+        { char: "快", pinyin: "kuai" },
+        { char: "乐", pinyin: "le" },
+        { char: "读", pinyin: "du" },
+        { char: "书", pinyin: "shu" }
     ];
 
-    // ----------------------------- 严格笔顺数据库 (每一笔顺序) 每个汉字拥有独立的笔画绘制函数列表 (确保正确笔顺视觉效果)-------------
-    // 采用Canvas绘图模拟标准笔顺 (每一笔独立绘制，演示时一笔一笔出现)
+    // 笔顺数据库 - 每个汉字的标准笔画顺序
     const strokeDB = {
         "朋": [
-            (ctx) => { ctx.beginPath(); ctx.moveTo(80,80); ctx.lineTo(110,70); ctx.lineTo(120,130); ctx.lineTo(90,140); ctx.fillStyle="#b45f2b"; ctx.fill(); ctx.stroke(); },
-            (ctx) => { ctx.beginPath(); ctx.moveTo(70,100); ctx.lineTo(80,190); ctx.lineTo(110,200); ctx.lineTo(100,110); ctx.fill(); ctx.stroke(); },
-            (ctx) => { ctx.beginPath(); ctx.moveTo(170,70); ctx.lineTo(200,65); ctx.lineTo(210,125); ctx.lineTo(180,135); ctx.fill(); ctx.stroke(); },
-            (ctx) => { ctx.beginPath(); ctx.moveTo(160,90); ctx.lineTo(170,190); ctx.lineTo(200,195); ctx.lineTo(190,100); ctx.fill(); ctx.stroke(); },
-            (ctx) => { ctx.beginPath(); ctx.moveTo(130,155); ctx.lineTo(170,150); ctx.lineWidth=6; ctx.stroke(); }
+            (ctx) => { ctx.beginPath(); ctx.moveTo(80,70); ctx.lineTo(110,60); ctx.lineTo(120,120); ctx.lineTo(90,130); ctx.fill(); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(70,90); ctx.lineTo(80,190); ctx.lineTo(110,200); ctx.lineTo(100,100); ctx.fill(); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(170,65); ctx.lineTo(200,60); ctx.lineTo(210,120); ctx.lineTo(180,130); ctx.fill(); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(160,85); ctx.lineTo(170,185); ctx.lineTo(200,190); ctx.lineTo(190,95); ctx.fill(); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(130,150); ctx.lineTo(170,145); ctx.lineWidth=6; ctx.stroke(); }
         ],
         "友": [
             (ctx) => { ctx.beginPath(); ctx.moveTo(120,70); ctx.lineTo(100,130); ctx.lineTo(150,135); ctx.lineTo(170,80); ctx.fill(); ctx.stroke(); },
@@ -527,77 +514,70 @@
             (ctx) => { ctx.beginPath(); ctx.moveTo(170,160); ctx.lineTo(200,190); ctx.stroke(); }
         ],
         "校": [
-            (ctx) => { ctx.beginPath(); ctx.moveTo(70,70); ctx.lineTo(70,200); ctx.stroke(); }, { ctx.beginPath(); ctx.moveTo(45,120); ctx.lineTo(95,120); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(70,70); ctx.lineTo(70,200); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(45,120); ctx.lineTo(95,120); ctx.stroke(); },
             (ctx) => { ctx.beginPath(); ctx.moveTo(70,100); ctx.lineTo(55,70); ctx.stroke(); ctx.beginPath(); ctx.moveTo(70,100); ctx.lineTo(85,70); ctx.stroke(); },
             (ctx) => { ctx.beginPath(); ctx.moveTo(130,80); ctx.lineTo(160,75); ctx.lineTo(170,125); ctx.lineTo(140,130); ctx.fill(); ctx.stroke(); },
             (ctx) => { ctx.beginPath(); ctx.moveTo(150,125); ctx.lineTo(140,180); ctx.lineTo(190,185); ctx.lineTo(195,140); ctx.fill(); ctx.stroke(); },
             (ctx) => { ctx.beginPath(); ctx.moveTo(180,100); ctx.lineTo(210,105); ctx.stroke(); }
         ],
         "学": [
-            (ctx) => { ctx.beginPath(); ctx.moveTo(100,60); ctx.lineTo(200,60); ctx.stroke(); }, { ctx.beginPath(); ctx.moveTo(150,60); ctx.lineTo(150,100); ctx.stroke(); },
-            (ctx) => { ctx.beginPath(); ctx.moveTo(80,100); ctx.lineTo(220,100); ctx.stroke(); }, { ctx.beginPath(); ctx.moveTo(110,130); ctx.lineTo(190,130); ctx.stroke(); ctx.beginPath(); ctx.moveTo(150,130); ctx.lineTo(150,200); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(100,60); ctx.lineTo(200,60); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(150,60); ctx.lineTo(150,100); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(80,100); ctx.lineTo(220,100); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(110,130); ctx.lineTo(190,130); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(150,130); ctx.lineTo(150,200); ctx.stroke(); },
             (ctx) => { ctx.beginPath(); ctx.moveTo(90,170); ctx.lineTo(210,170); ctx.stroke(); }
         ],
         "习": [
-            (ctx) => { ctx.beginPath(); ctx.moveTo(100,70); ctx.lineTo(200,70); ctx.stroke(); }, { ctx.beginPath(); ctx.moveTo(80,100); ctx.lineTo(220,100); ctx.stroke(); },
-            (ctx) => { ctx.beginPath(); ctx.moveTo(70,130); ctx.lineTo(230,130); ctx.stroke(); }, { ctx.beginPath(); ctx.ellipse(150,160,40,25,0,0,Math.PI*2); ctx.stroke(); }
+            (ctx) => { ctx.beginPath(); ctx.moveTo(100,70); ctx.lineTo(200,70); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(80,100); ctx.lineTo(220,100); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(70,130); ctx.lineTo(230,130); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.ellipse(150,160,40,25,0,0,Math.PI*2); ctx.stroke(); }
         ],
         "快": [
-            (ctx) => { ctx.beginPath(); ctx.moveTo(60,80); ctx.lineTo(60,210); ctx.stroke(); }, { ctx.beginPath(); ctx.moveTo(40,120); ctx.lineTo(80,120); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(60,80); ctx.lineTo(60,210); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(40,120); ctx.lineTo(80,120); ctx.stroke(); },
             (ctx) => { ctx.beginPath(); ctx.moveTo(110,90); ctx.lineTo(140,85); ctx.lineTo(150,130); ctx.lineTo(120,135); ctx.fill(); ctx.stroke(); },
             (ctx) => { ctx.beginPath(); ctx.moveTo(150,110); ctx.lineTo(190,100); ctx.lineTo(210,150); ctx.lineTo(170,160); ctx.fill(); ctx.stroke(); },
             (ctx) => { ctx.beginPath(); ctx.moveTo(190,130); ctx.lineTo(220,180); ctx.stroke(); }
         ],
         "乐": [
-            (ctx) => { ctx.beginPath(); ctx.moveTo(150,50); ctx.lineTo(150,220); ctx.stroke(); }, { ctx.beginPath(); ctx.moveTo(80,100); ctx.lineTo(220,100); ctx.stroke(); },
-            (ctx) => { ctx.beginPath(); ctx.moveTo(80,150); ctx.lineTo(220,150); ctx.stroke(); }, { ctx.beginPath(); ctx.moveTo(100,180); ctx.lineTo(200,180); ctx.stroke(); }
+            (ctx) => { ctx.beginPath(); ctx.moveTo(150,50); ctx.lineTo(150,220); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(80,100); ctx.lineTo(220,100); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(80,150); ctx.lineTo(220,150); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(100,180); ctx.lineTo(200,180); ctx.stroke(); }
         ],
         "读": [
-            (ctx) => { ctx.beginPath(); ctx.moveTo(70,70); ctx.lineTo(70,210); ctx.stroke(); }, { ctx.beginPath(); ctx.moveTo(50,110); ctx.lineTo(90,110); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(70,70); ctx.lineTo(70,210); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(50,110); ctx.lineTo(90,110); ctx.stroke(); },
             (ctx) => { ctx.beginPath(); ctx.moveTo(120,80); ctx.lineTo(150,75); ctx.lineTo(160,120); ctx.lineTo(130,125); ctx.fill(); ctx.stroke(); },
             (ctx) => { ctx.beginPath(); ctx.moveTo(150,95); ctx.lineTo(190,90); ctx.lineTo(200,140); ctx.lineTo(170,145); ctx.fill(); ctx.stroke(); },
-            (ctx) => { ctx.beginPath(); ctx.moveTo(180,115); ctx.lineTo(210,110); ctx.lineTo(220,160); ctx.stroke(); }, { ctx.beginPath(); ctx.moveTo(95,160); ctx.lineTo(220,160); ctx.stroke(); }
+            (ctx) => { ctx.beginPath(); ctx.moveTo(180,115); ctx.lineTo(210,110); ctx.lineTo(220,160); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(95,160); ctx.lineTo(220,160); ctx.stroke(); }
         ],
         "书": [
-            (ctx) => { ctx.beginPath(); ctx.moveTo(100,70); ctx.lineTo(200,70); ctx.stroke(); }, { ctx.beginPath(); ctx.moveTo(80,110); ctx.lineTo(220,110); ctx.stroke(); },
-            (ctx) => { ctx.beginPath(); ctx.moveTo(150,50); ctx.lineTo(150,180); ctx.stroke(); }, { ctx.beginPath(); ctx.moveTo(110,150); ctx.lineTo(190,150); ctx.stroke(); }
+            (ctx) => { ctx.beginPath(); ctx.moveTo(100,70); ctx.lineTo(200,70); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(80,110); ctx.lineTo(220,110); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(150,50); ctx.lineTo(150,180); ctx.stroke(); },
+            (ctx) => { ctx.beginPath(); ctx.moveTo(110,150); ctx.lineTo(190,150); ctx.stroke(); }
         ]
     };
-    // 为所有字保证笔顺存在，若新增未定义则使用默认简单结构
+
     function getStrokeArray(ch) {
         if(strokeDB[ch]) return strokeDB[ch];
-        // 默认一笔横线作为提示
         return [(ctx) => { ctx.beginPath(); ctx.moveTo(50,150); ctx.lineTo(250,150); ctx.stroke(); }];
     }
 
     // 全局变量
-    let currentMode = "student"; // student / teacher
-    let teacherAuthenticated = false;
+    let currentMode = "student";
     let strokeAnimInterval = null;
     let currentStrokeChar = "朋";
     let strokeFunctions = [];
+    let canvas, ctx;
+    let selectedPairFirst = null;
 
-    // DOM 元素
-    const canvas = document.getElementById('strokeCanvas');
-    const ctx = canvas.getContext('2d');
-    const readWordSpan = document.getElementById('readWordDisplay');
-    const speakBtn = document.getElementById('speakBtn');
-    const strokeSelectorDiv = document.getElementById('strokeCharSelector');
-    const clearCanvasBtn = document.getElementById('clearCanvasBtn');
-    const animateStrokeBtn = document.getElementById('animateStrokeBtn');
-    const modeLabel = document.getElementById('modeLabel');
-    const toggleTeacherBtn = document.getElementById('toggleTeacherBtn');
-    const teacherPanel = document.getElementById('teacherPanel');
-    const editArea = document.getElementById('editArea');
-    const unlockEditBtn = document.getElementById('unlockEditBtn');
-    const teacherPwd = document.getElementById('teacherPwd');
-    const pwdErrorSpan = document.getElementById('pwdError');
-    const wordEditList = document.getElementById('wordEditList');
-    const addWordBtn = document.getElementById('addWordBtn');
-    const saveWordBankBtn = document.getElementById('saveWordBankBtn');
-    const exitTeacherModeBtn = document.getElementById('exitTeacherMode');
-
-    // 辅助函数: 朗读
+    // 朗读
     function speakWord(word) {
         const utterance = new SpeechSynthesisUtterance(word);
         utterance.lang = 'zh-CN';
@@ -606,21 +586,24 @@
         speechSynthesis.speak(utterance);
     }
 
-    // 笔顺画板操作
+    // 笔顺画板
     function clearCanvasDrawing() {
+        if(!ctx) return;
         ctx.clearRect(0, 0, 300, 300);
         ctx.fillStyle = "#fef7e8";
         ctx.fillRect(0, 0, 300, 300);
         ctx.strokeStyle = "#b45f2b";
+        ctx.fillStyle = "#b45f2b";
         ctx.lineWidth = 6;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
     }
+
     function loadStrokeForChar(char) {
         strokeFunctions = getStrokeArray(char);
         clearCanvasDrawing();
-        // 全部绘制灰色底图? 为了演示时干净，不清空全绘制; 让学生描写时，演示动画时才重绘完整
     }
+
     function drawFullStroke() {
         clearCanvasDrawing();
         for(let fn of strokeFunctions) {
@@ -629,6 +612,7 @@
             ctx.restore();
         }
     }
+
     function animateStrokeSequence() {
         if(strokeAnimInterval) clearInterval(strokeAnimInterval);
         clearCanvasDrawing();
@@ -645,9 +629,11 @@
         strokeAnimInterval = setInterval(drawNext, 550);
     }
 
-    // 刷新笔顺选择器
+    // 重建笔顺选择器
     function rebuildStrokeSelector() {
-        strokeSelectorDiv.innerHTML = '';
+        const selectorDiv = document.getElementById('strokeCharSelector');
+        if(!selectorDiv) return;
+        selectorDiv.innerHTML = '';
         wordBank.forEach(w => {
             const btn = document.createElement('button');
             btn.innerText = w.char;
@@ -658,27 +644,28 @@
                 btn.classList.add('active');
                 currentStrokeChar = w.char;
                 loadStrokeForChar(currentStrokeChar);
-                updateReadWord(); // 同步朗读显示
+                updateReadWord();
             });
-            strokeSelectorDiv.appendChild(btn);
+            selectorDiv.appendChild(btn);
         });
-        if(wordBank.findIndex(w=>w.char===currentStrokeChar)===-1 && wordBank.length) currentStrokeChar=wordBank[0].char;
+        if(wordBank.length > 0 && !wordBank.find(w=>w.char===currentStrokeChar)) {
+            currentStrokeChar = wordBank[0].char;
+        }
         loadStrokeForChar(currentStrokeChar);
     }
 
     function updateReadWord() {
-        readWordSpan.innerText = currentStrokeChar;
+        const readWordSpan = document.getElementById('readWordDisplay');
+        if(readWordSpan) readWordSpan.innerText = currentStrokeChar;
     }
 
-    // 听写新逻辑: 听音选字
+    // 听音选字
     let currentListenWord = null;
     function buildListenGame() {
         const optionsDiv = document.getElementById('listenOptions');
-        if(!optionsDiv) return;
-        // 随机选一个生字
+        if(!optionsDiv || wordBank.length === 0) return;
         const randomIndex = Math.floor(Math.random() * wordBank.length);
         currentListenWord = wordBank[randomIndex];
-        // 生成选项 (包含正确+其他不重复)
         let candidates = [currentListenWord];
         const others = wordBank.filter(w => w.char !== currentListenWord.char);
         for(let i=0; i<Math.min(3, others.length); i++) candidates.push(others[i]);
@@ -689,86 +676,102 @@
             btn.className = 'option-card';
             btn.innerText = opt.char;
             btn.dataset.char = opt.char;
-            btn.addEventListener('click', (e) => {
-                const selectedChar = btn.dataset.char;
+            btn.addEventListener('click', () => {
                 const feedback = document.getElementById('listenFeedback');
-                if(selectedChar === currentListenWord.char) {
-                    feedback.innerHTML = '✅ 哇！ 答对啦！ 好厉害！ 🎉🎉🎉';
-                    setTimeout(()=> buildListenGame(), 1200);
+                if(btn.dataset.char === currentListenWord.char) {
+                    feedback.innerHTML = '✅ 哇！答对啦！好厉害！ 🎉🎉🎉';
+                    setTimeout(() => buildListenGame(), 1200);
                 } else {
-                    feedback.innerHTML = `❌ 不对哦～ 再听一次读音吧！ 正确字是“${currentListenWord.char}”吗？ 再试试看！`;
+                    feedback.innerHTML = `❌ 不对哦～ 再听一次读音吧！ 正确字是“${currentListenWord.char}”`;
                 }
             });
             optionsDiv.appendChild(btn);
         });
-        document.getElementById('listenFeedback').innerHTML = '🔊 点击上方的喇叭，再选出正确的汉字！';
+        const feedback = document.getElementById('listenFeedback');
+        if(feedback) feedback.innerHTML = '🔊 点击上方的喇叭，再选出正确的汉字！';
     }
+
     document.getElementById('listenPlayBtn')?.addEventListener('click', () => {
         if(currentListenWord) speakWord(currentListenWord.char);
         else buildListenGame();
     });
 
-    // 配对游戏刷新
-    let selectedPair = null; let selectedDomPair = null;
+    // 配对游戏
     function buildPairGame() {
         const container = document.getElementById('pairGameContainer');
+        if(!container) return;
         container.innerHTML = '';
         const shuffled = [...wordBank];
         for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
         const charRow = document.createElement('div'); charRow.className = 'pair-row';
         const pinyinRow = document.createElement('div'); pinyinRow.className = 'pair-row';
         shuffled.forEach(item => {
-            const charBox = document.createElement('div'); charBox.className = 'pair-box'; charBox.dataset.type = 'char'; charBox.dataset.value = item.char; charBox.dataset.matchPinyin = item.pinyin;
+            const charBox = document.createElement('div'); charBox.className = 'pair-box'; 
+            charBox.dataset.type = 'char'; charBox.dataset.value = item.char; charBox.dataset.matchPinyin = item.pinyin;
             charBox.innerHTML = `<div class="pair-word">${item.char}</div><div class="pair-pinyin">✨ 汉字</div>`;
             charRow.appendChild(charBox);
-            const pinyinBox = document.createElement('div'); pinyinBox.className = 'pair-box'; pinyinBox.dataset.type = 'pinyin'; pinyinBox.dataset.value = item.pinyin; pinyinBox.dataset.matchChar = item.char;
+            const pinyinBox = document.createElement('div'); pinyinBox.className = 'pair-box'; 
+            pinyinBox.dataset.type = 'pinyin'; pinyinBox.dataset.value = item.pinyin; pinyinBox.dataset.matchChar = item.char;
             pinyinBox.innerHTML = `<div class="pair-word">${item.pinyin}</div><div class="pair-pinyin">🔊 拼音</div>`;
             pinyinRow.appendChild(pinyinBox);
         });
         container.appendChild(charRow); container.appendChild(pinyinRow);
         attachPairEvents();
     }
+
     function attachPairEvents() {
         document.querySelectorAll('.pair-box').forEach(box => {
-            box.removeEventListener('click', pairHandler);
-            box.addEventListener('click', pairHandler);
+            box.removeEventListener('click', pairClickHandler);
+            box.addEventListener('click', pairClickHandler);
         });
     }
-    function pairHandler(e) {
+
+    function pairClickHandler(e) {
         const box = e.currentTarget;
         if(box.classList.contains('matched')) return;
-        if(selectedPair === null) {
-            if(selectedDomPair) selectedDomPair.classList.remove('selected');
-            selectedPair = box;
-            selectedDomPair = box;
+        if(selectedPairFirst === null) {
+            if(document.querySelector('.pair-box.selected')) {
+                document.querySelector('.pair-box.selected').classList.remove('selected');
+            }
+            selectedPairFirst = box;
             box.classList.add('selected');
         } else {
-            const first = selectedPair, second = box;
+            const first = selectedPairFirst;
+            const second = box;
             let match = false;
-            if(first.dataset.type === 'char' && second.dataset.type === 'pinyin' && first.dataset.matchPinyin === second.dataset.value) match=true;
-            if(first.dataset.type === 'pinyin' && second.dataset.type === 'char' && first.dataset.matchChar === second.dataset.value) match=true;
+            if(first.dataset.type === 'char' && second.dataset.type === 'pinyin' && first.dataset.matchPinyin === second.dataset.value) match = true;
+            if(first.dataset.type === 'pinyin' && second.dataset.type === 'char' && first.dataset.matchChar === second.dataset.value) match = true;
             if(match) {
                 first.classList.add('matched'); second.classList.add('matched');
-                first.style.display='none'; second.style.display='none';
-                document.getElementById('pairMessage').innerHTML = '🎉 配对成功！ 真聪明！';
+                first.style.display = 'none'; second.style.display = 'none';
+                document.getElementById('pairMessage').innerHTML = '🎉 配对成功！真聪明！';
             } else {
-                document.getElementById('pairMessage').innerHTML = '😢 配对错误，再试试！ 汉字配对应拼音。';
+                document.getElementById('pairMessage').innerHTML = '😢 配对错误，再试试！汉字配对应拼音。';
             }
-            selectedPair.classList.remove('selected');
-            selectedPair = null; selectedDomPair = null;
+            first.classList.remove('selected');
+            selectedPairFirst = null;
         }
     }
-    document.getElementById('resetPairBtn')?.addEventListener('click', ()=>{ buildPairGame(); document.getElementById('pairMessage').innerHTML='⭐ 重新开始配对啦！'; selectedPair=null; });
 
-    // 教师模式编辑界面构建
+    document.getElementById('resetPairBtn')?.addEventListener('click', () => { 
+        buildPairGame(); 
+        document.getElementById('pairMessage').innerHTML = '⭐ 重新开始配对啦！';
+        selectedPairFirst = null;
+    });
+
+    // 教师模式编辑
     function refreshEditList() {
-        wordEditList.innerHTML = '';
+        const wordEditListDiv = document.getElementById('wordEditList');
+        if(!wordEditListDiv) return;
+        wordEditListDiv.innerHTML = '';
         wordBank.forEach((item, idx) => {
             const div = document.createElement('div'); div.className = 'edit-word-item';
-            div.innerHTML = `<input type="text" class="edit-char" value="${item.char}" style="width:70px;"> 
-                             <input type="text" class="edit-pinyin" value="${item.pinyin}" style="width:100px;">
-                             <button class="ctrl-btn del-word" data-idx="${idx}" style="background:#ff8c5a;">🗑️</button>`;
-            wordEditList.appendChild(div);
+            div.innerHTML = `
+                <input type="text" class="edit-char" value="${item.char}" style="width:70px;"> 
+                <input type="text" class="edit-pinyin" value="${item.pinyin}" style="width:90px;">
+                <button class="ctrl-btn del-word" data-idx="${idx}" style="background:#ff8c5a; padding:4px 12px;">🗑️</button>
+            `;
+            wordEditListDiv.appendChild(div);
         });
         document.querySelectorAll('.del-word').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -778,8 +781,8 @@
             });
         });
     }
-    addWordBtn.addEventListener('click', () => { wordBank.push({ char: "新", pinyin: "xīn" }); refreshEditList(); });
-    saveWordBankBtn.addEventListener('click', () => {
+
+    function saveWordBank() {
         const newBank = [];
         const items = document.querySelectorAll('.edit-word-item');
         for(let item of items) {
@@ -789,71 +792,20 @@
                 newBank.push({ char: charInput.value.trim(), pinyin: pinyinInput.value.trim() });
             }
         }
-        if(newBank.length>0) wordBank = newBank;
-        // 刷新所有组件
+        if(newBank.length > 0) wordBank = newBank;
         rebuildStrokeSelector();
         buildListenGame();
         buildPairGame();
         updateReadWord();
-        if(wordBank.length) currentStrokeChar = wordBank[0].char;
+        if(wordBank.length > 0) currentStrokeChar = wordBank[0].char;
         loadStrokeForChar(currentStrokeChar);
         document.getElementById('pairMessage').innerHTML = '✅ 字库已更新！';
-    });
-    function enterTeacherMode() {
-        currentMode = "teacher";
-        modeLabel.innerText = "👩‍🏫 教师模式";
-        teacherPanel.style.display = "block";
-        refreshEditList();
     }
-    function exitTeacherMode() {
-        currentMode = "student";
-        modeLabel.innerText = "👧🏻 学生模式";
-        teacherPanel.style.display = "none";
-        editArea.style.display = "none";
-        teacherAuthenticated = false;
-        teacherPwd.value = "";
-    }
-    toggleTeacherBtn.addEventListener('click', () => {
-        if(currentMode === "student") {
-            teacherPanel.style.display = "block";
-            editArea.style.display = "none";
-            pwdErrorSpan.innerText = "";
-        } else {
-            exitTeacherMode();
-        }
-    });
-    unlockEditBtn.addEventListener('click', () => {
-        if(teacherPwd.value === "123456") {
-            teacherAuthenticated = true;
-            editArea.style.display = "block";
-            pwdErrorSpan.innerText = "";
-            refreshEditList();
-        } else { pwdErrorSpan.innerText = "密码错误，教师密码: 123456"; }
-    });
-    exitTeacherModeBtn.addEventListener('click', exitTeacherMode);
+
     // 页面切换
-    const pages = { read: 'page-read', stroke: 'page-stroke', listen: 'page-listen', pair: 'page-pair' };
     function switchPage(pageId) {
-        Object.values(pages).forEach(pid => document.getElementById(pid).classList.remove('active-page'));
-        document.getElementById(pages[pageId]).classList.add('active-page');
-        document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelector(`.menu-btn[data-page="${pageId}"]`).classList.add('active');
-        if(pageId === 'listen') buildListenGame();
-        if(pageId === 'pair') buildPairGame();
-        if(pageId === 'stroke') { loadStrokeForChar(currentStrokeChar); }
-    }
-    document.querySelectorAll('.menu-btn').forEach(btn => {
-        btn.addEventListener('click', () => switchPage(btn.dataset.page));
-    });
-    speakBtn.addEventListener('click', () => speakWord(currentStrokeChar));
-    clearCanvasBtn.addEventListener('click', () => { if(strokeAnimInterval)clearInterval(strokeAnimInterval); clearCanvasDrawing(); });
-    animateStrokeBtn.addEventListener('click', () => { if(strokeAnimInterval)clearInterval(strokeAnimInterval); animateStrokeSequence(); });
-    // 初始化
-    rebuildStrokeSelector();
-    buildListenGame();
-    buildPairGame();
-    switchPage('read');
-    updateReadWord();
-</script>
-</body>
-</html>
+        const pages = ['read', 'stroke', 'listen', 'pair'];
+        pages.forEach(pid => {
+            const pageEl = document.getElementById(`page-${pid}`);
+            if(pageEl) pageEl.classList.remove('active-page');
+       
