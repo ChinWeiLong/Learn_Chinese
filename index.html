@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-MY">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🌈 华语全能学习王 - v56 匹配消除版</title>
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+    <script src="https://unpkg.com/pinyin-pro"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { 
+            --p: #FF8E9E; --s: #7BD5F5; --a: #FFD54F; --bg: #FFFBF2; --txt: #5D4037;
+            --font-kai: "楷体", "KaiTi", "STKaiti", serif;
+            --bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --shd-v: 0 10px 30px rgba(93, 64, 55, 0.08);
+        }
+        
+        * { box-sizing: border-box; }
+        body { font-family: var(--font-kai); background: var(--bg); color: var(--txt); margin: 0; padding: 0; overflow-x: hidden; perspective: 1000px; }
+
+        body::before {
+            content: ""; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: radial-gradient(var(--s) 1px, transparent 1px), radial-gradient(var(--p) 1px, transparent 1px);
+            background-size: 80px 80px; background-position: 0 0, 40px 40px;
+            opacity: 0.03; animation: spaceMove 60s linear infinite; z-index: -1; transform: translateZ(-10px);
+        }
+        @keyframes spaceMove { from { transform: translateZ(-10px) translateY(0); } to { transform: translateZ(-10px) translateY(-1000px); } }
+
+        .page { display: none; padding: 15px; max-width: 900px; margin: 0 auto; min-height: 100vh; flex-direction: column; transform-style: preserve-3d; }
+        .page.active { display: flex; animation: pageInSpace 0.5s var(--bounce); }
+        @keyframes pageInSpace { from { opacity: 0; transform: translateZ(-150px); } to { opacity: 1; transform: translateZ(0); } }
+
+        header { 
+            background: rgba(255, 142, 158, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            color: white; padding: 12px 15px; text-align: center; display: flex; justify-content: space-between; align-items: center; 
+            box-shadow: 0 8px 25px rgba(255,142,158,0.25); width: 100%; position: sticky; top:0; z-index: 1000; border-radius: 0 0 20px 20px;
+        }
+        .head-btn { background: white; border: none; color: var(--p); border-radius: 50px; padding: 6px 16px; font-weight: bold; cursor: pointer; }
+
+        .content-body { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 20px 0; width: 100%; }
+
+        .tianzige-box {
+            width: 350px; height: 350px; max-width: 95vw; max-height: 95vw;
+            background-color: #ffffff; border: 4px solid #cc0000; position: relative;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 15px; box-shadow: inset 0 10px 20px rgba(0,0,0,0.05), 0 8px 20px rgba(204,0,0,0.15); 
+        }
+        .tianzige-box::before, .tianzige-box::after { content: ""; position: absolute; border: 1.5px dashed #ff4d4d; z-index: 1; pointer-events: none; }
+        .tianzige-box::before { top: 0; left: 50%; width: 1px; height: 100%; }
+        .tianzige-box::after { top: 50%; left: 0; width: 100%; height: 1px; }
+        .writer-div { width: 100%; height: 100%; z-index: 5; }
+
+        .match-item, .stroke-char-btn { 
+            background: white; border: 3px solid var(--s); border-radius: 18px; 
+            display: flex; justify-content: center; align-items: center; 
+            font-weight: bold; cursor: pointer; transition: 0.3s var(--bounce);
+            box-shadow: 0 6px 0 var(--s), 0 10px 20px rgba(0,0,0,0.05);
+            transform-style: preserve-3d;
+        }
+        .match-item { width: 100%; max-width: 320px; height: 75px; font-size: 2.2rem; }
+        .stroke-char-btn { width: 65px; height: 65px; font-size: 1.6rem; border-color: var(--a); box-shadow: 0 5px 0 #E6BE40; }
+        .match-item:active { transform: translateY(3px); box-shadow: none; }
+
+        .pinyin-display { 
+            font-size: 2.5rem; color: var(--p); font-family: Arial; font-weight: bold; 
+            margin: 10px 0; display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;
+        }
+        .voice-btn-mini { 
+            background: var(--p); color: white; border: none; width: 55px; height: 55px; 
+            border-radius: 50%; cursor: pointer; font-size: 1.8rem; 
+            box-shadow: 0 5px 0 #D81B60; display: flex; align-items: center; justify-content: center;
+        }
+
+        .lesson-text { background: white; padding: 25px; border-radius: 30px; border: 5px dashed var(--a); line-height: 4.2; text-align: center; width: 100%; }
+        ruby { font-size: 3rem; margin: 0 8px; }
+        rt { font-family: Arial; font-size: 1.1rem; color: var(--p); }
+
+        #toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.85); color: white; padding: 15px 30px; border-radius: 50px; display: none; z-index: 10000; }
+        #confirm-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10001; }
+        .modal-box { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
+        #trans-info { background: #E3F2FD; padding: 12px; border-radius: 15px; width: 100%; max-width: 300px; text-align: left; font-size: 1rem; border-left: 8px solid var(--s); margin: 10px auto; }
+
+        .admin-card { background: white; border-radius: 15px; border: 1px solid #eee; margin-bottom: 12px; width: 100%; overflow: hidden; }
+        .admin-card-header { padding: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+        .admin-card-body { padding: 0 15px; max-height: 0; overflow: hidden; transition: 0.3s ease; background: #fafafa; }
+        .admin-card.open .admin-card-body { max-height: 1000px; padding: 15px; border-top: 1px solid #eee; }
+        .admin-input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1rem; margin-top: 5px; }
+    </style>
+</head>
+<body onmousemove="handleTilt(event)">
+
+<div id="confirm-modal"><div class="modal-box"><h3>确认删除？</h3><div style="display:flex; gap:10px; margin-top:25px;"><button class="head-btn" style="flex:1; background:#eee; color:#666;" onclick="closeConfirm()">取消</button><button class="head-btn" style="flex:1; background:#FF5252; color:white;" id="confirm-del-btn">确定</button></div></div></div>
+<div id="toast"></div>
+
+<div id="page-home" class="page active">
+    <header><span>🏫 华语全能学习王</span><button class="head-btn" onclick="goToPage('page-login')">教师模式</button></header>
+    <div class="content-body" id="unit-list" style="padding-top: 20px;"></div>
+</div>
+
+<div id="page-login" class="page">
+    <header><button class="head-btn" onclick="goToPage('page-home')">返回</button><span>管理员登录</span><div style="width:40px"></div></header>
+    <div class="content-body">
+        <div style="background:white; padding:30px; border-radius:25px; width:90%; max-width:350px; text-align:center; box-shadow: var(--shd-v);">
+            <h2 style="margin-top:0;">🔐 验证身份</h2>
+            <input type="password" id="pass-input" class="admin-input" style="text-align:center; letter-spacing: 5px;" placeholder="****">
+            <button class="match-item" style="width:100%; margin-top:20px; max-width:none; background:var(--s); color:white; border:none;" onclick="handleLogin()">进入后台</button>
+        </div>
+    </div>
+</div>
+
+<div id="page-menu" class="page">
+    <header><button class="head-btn" onclick="goToPage('page-home')">⬅ 首页</button><span id="menu-title"></span><div style="width:40px"></div></header>
+    <div class="content-body" style="justify-content: center;">
+        <div style="display: flex; flex-direction: column; gap: 20px; width: 100%; align-items: center;">
+            <div class="match-item" onclick="startEx(0)"><span>🔊 朗诵</span></div>
+            <div class="match-item" onclick="startEx(1)"><span>🎨 笔顺</span></div>
+            <div class="match-item" onclick="startEx(2)"><span>✍️ 听写</span></div>
+            <div class="match-item" onclick="startEx(3)"><span>🧩 匹配</span></div>
+        </div>
+    </div>
+</div>
+
+<div id="page-exercise" class="page">
+    <header><button class="head-btn" onclick="goToPage('page-menu')">⬅ 返回</button><span id="ex-header-title">学习中</span><div style="width:40px"></div></header>
+    <div class="content-body">
+        <div id="box-0" style="display:none; width:100%; text-align:center;">
+            <div style="display:flex; gap:12px; justify-content:center; margin-bottom:15px;"><button class="match-item" style="background:#4CAF50; color:white; height:60px; max-width:150px;" onclick="doPlay()">▶️ 播放</button><button class="match-item" style="background:#FF9800; color:white; height:60px; max-width:150px;" onclick="doPause()">⏸️ 暂停</button></div>
+            <div class="lesson-text" id="lesson-display"></div>
+        </div>
+
+        <div id="box-1" style="display:none; width:100%; text-align:center;">
+            <div id="stroke-btns" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-bottom:15px;"></div>
+            <div class="pinyin-display">
+                <button class="voice-btn-mini" onclick="playCurrentChar()">🔊</button>
+                <span id="char-pinyin"></span>
+            </div>
+            <div class="tianzige-box" style="margin: 0 auto;"><div id="stroke-writer" class="writer-div"></div></div>
+            <div id="trans-info"></div>
+            <button class="head-btn" style="background:var(--s); color:white; padding:12px 35px; border-radius:50px; margin-top:10px;" onclick="st_writer.animateCharacter()">🔄 重播动画</button>
+        </div>
+
+        <div id="box-2" style="display:none; text-align:center; width:100%;">
+            <button class="match-item" style="background:var(--p); color:white; width:220px; height:65px; margin:0 auto 25px; max-width:none;" onclick="playQuizVoice()">📢 听读音</button>
+            <div class="tianzige-box" style="margin: 0 auto;"><div id="quiz-writer" class="writer-div"></div></div>
+            <button class="head-btn" style="background:#bbb; color:white; margin-top:35px; padding:10px 30px;" onclick="quiz_writer.quiz()">擦除重写</button>
+        </div>
+
+        <div id="box-3" style="display:none; width:100%;">
+            <div id="match-container" style="display:flex; gap:15px; justify-content:center; width: 100%;">
+                <div id="m-left" style="display:flex; flex-direction:column; gap:12px; flex:1; align-items: flex-end;"></div>
+                <div id="m-right" style="display:flex; flex-direction:column; gap:12px; flex:1; align-items: flex-start;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="page-admin" class="page">
+    <header><button class="head-btn" onclick="goToPage('page-home')">返回</button><span>教师中心</span><button class="head-btn" style="background:var(--s); color:white;" onclick="saveDB()">💾 保存</button></header>
+    <div id="admin-list" style="padding: 15px 0 100px 0;"></div>
+    <button class="match-item" style="width:100%; position:fixed; bottom:0; left:0; border-radius:0; height:75px; background:var(--a); border:none; max-width:none; box-shadow:none; margin:0;" onclick="addUnit()">+ 添加新教学单元</button>
+</div>
+
+<script>
+    const { pinyin } = pinyinPro;
+    const adminPass = "1234";
+    let db = [{ title: "第一单元", content: "清晨，校园真热闹。", pickWords: "晨 热 闹" }];
+    let curU = null, st_writer = null, quiz_writer = null, dictPool = [], selChar = null, selPy = null, matchLeft = 0, delIdx = null, currentChar = "";
+
+    window.onload = () => { const saved = localStorage.getItem('kssr_v56'); if(saved) db = JSON.parse(saved); renderHome(); };
+    function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 1600); }
+    function goToPage(id) { window.speechSynthesis.cancel(); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+    
+    function handleTilt(e) { 
+        if (window.innerWidth < 768) return; 
+        const items = document.querySelectorAll('.match-item, .stroke-char-btn'); 
+        items.forEach(item => { 
+            const rect = item.getBoundingClientRect(); 
+            const x = e.clientX - rect.left, y = e.clientY - rect.top; 
+            if (x > 0 && x < rect.width && y > 0 && y < rect.height) { 
+                const rx = (rect.height / 2 - y) / 7, ry = (x - rect.width / 2) / 12; 
+                item.style.transform = `translateY(-5px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(30px)`; 
+            } else { item.style.transform = ''; } 
+        }); 
+    }
+
+    function handleLogin() { const input = document.getElementById('pass-input'); if(input.value === adminPass) { input.value = ""; renderAdmin(); } else { showToast("❌ 密码错误"); } }
+
+    function renderHome() { 
+        const list = document.getElementById('unit-list'); list.innerHTML = ''; 
+        db.forEach((u, i) => { 
+            const d = document.createElement('div'); d.className = "match-item"; d.style.maxWidth = "90%"; d.style.margin = "0 auto 12px"; d.innerHTML = `<span>📂 ${u.title}</span>`; 
+            d.onclick = () => { curU = u; document.getElementById('menu-title').innerText = u.title; renderLesson(u.content); goToPage('page-menu'); }; list.appendChild(d); 
+        }); 
+    }
+    
+    function renderLesson(txt) { 
+        const container = document.getElementById('lesson-display'); container.innerHTML = ''; 
+        for(let char of txt) { if(/[\u4e00-\u9fa5]/.test(char)) container.innerHTML += `<ruby>${char}<rt>${pinyin(char)}</rt></ruby>`; else container.innerHTML += `<span style="font-size:3rem; vertical-align:bottom;">${char}</span>`; } 
+    }
+
+    function startEx(idx) { 
+        document.querySelectorAll('#page-exercise [id^="box-"]').forEach(b => b.style.display='none'); document.getElementById(`box-${idx}`).style.display='block'; 
+        if(idx === 1) initStroke(); if(idx === 2) { dictPool = [...curU.pickWords.split(/\s+/).filter(x=>x)]; nextDict(); } if(idx === 3) initMatch(); goToPage('page-exercise'); 
+    }
+
+    function doPlay() { if(window.speechSynthesis.paused) return window.speechSynthesis.resume(); const m = new SpeechSynthesisUtterance(curU.content); m.lang='zh-CN'; m.rate=0.7; window.speechSynthesis.speak(m); }
+    function doPause() { window.speechSynthesis.pause(); }
+
+    function initStroke() {
+        const btns = document.getElementById('stroke-btns'); btns.innerHTML = '';
+        const ws = curU.pickWords.split(/\s+/).filter(x=>x);
+        ws.forEach(w => { const b = document.createElement('button'); b.className = "stroke-char-btn"; b.innerText = w; b.onclick = () => loadStrokeChar(w); btns.appendChild(b); });
+        if(ws.length) loadStrokeChar(ws[0]);
+    }
+
+    async function loadStrokeChar(c) {
+        currentChar = c;
+        document.getElementById('char-pinyin').innerText = pinyin(c);
+        document.getElementById('stroke-writer').innerHTML = '';
+        const boxSize = Math.min(350, window.innerWidth * 0.95);
+        st_writer = HanziWriter.create('stroke-writer', c, { width: boxSize, height: boxSize, strokeColor: '#cc0000', renderer: 'canvas', padding: 5 });
+        st_writer.animateCharacter();
+        playCurrentChar();
+        const info = document.getElementById('trans-info'); info.innerText = "🔍 查询翻译...";
+        try {
+            const [en, ms] = await Promise.all([ fetch(`https://api.mymemory.translated.net/get?q=${c}&langpair=zh|en`).then(r=>r.json()), fetch(`https://api.mymemory.translated.net/get?q=${c}&langpair=zh|ms`).then(r=>r.json()) ]);
+            info.innerHTML = `<b>EN:</b> ${en.responseData.translatedText}<br><b>MS:</b> ${ms.responseData.translatedText}`;
+        } catch(e) { info.innerText = ""; }
+    }
+    function playCurrentChar() { if(currentChar) window.speechSynthesis.speak(new SpeechSynthesisUtterance(currentChar)); }
+
+    function nextDict() {
+        if(!dictPool.length) { confetti(); showToast("🏆 听写完成！"); setTimeout(()=>goToPage('page-menu'), 1800); return; }
+        const w = dictPool[Math.floor(Math.random()*dictPool.length)];
+        const boxSize = Math.min(350, window.innerWidth * 0.95);
+        document.getElementById('quiz-writer').innerHTML = '';
+        quiz_writer = HanziWriter.create('quiz-writer', w, { width: boxSize, height: boxSize, showCharacter: false, showOutline: false, renderer: 'canvas', padding: 5 });
+        quiz_writer.quiz({ onComplete: () => { confetti({ particleCount: 30 }); showToast("✅ 正确！"); dictPool = dictPool.filter(x=>x!==w); setTimeout(nextDict, 1000); }});
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance(w));
+    }
+    function playQuizVoice() { window.speechSynthesis.speak(new SpeechSynthesisUtterance(quiz_writer._char)); }
+
+    // ✨ 匹配游戏逻辑重写：格子配对成功后消失
+    function initMatch() {
+        const L = document.getElementById('m-left'), R = document.getElementById('m-right'); L.innerHTML = ''; R.innerHTML = '';
+        let ws = curU.pickWords.split(/\s+/).filter(x=>x); matchLeft = ws.length;
+        
+        ws.sort(()=>Math.random()-0.5).forEach(w => { 
+            const d = document.createElement('div'); d.className = "match-item"; d.innerText = w; 
+            d.onclick = () => { 
+                document.querySelectorAll('#m-left .match-item').forEach(x=>x.style.borderColor='var(--s)'); 
+                d.style.borderColor='var(--p)'; selChar = { val: w, el: d }; 
+                checkMatch(); 
+            }; 
+            L.appendChild(d); 
+        });
+
+        ws.map(w => ({c:w, p:pinyin(w)})).sort(()=>Math.random()-0.5).forEach(i => { 
+            const d = document.createElement('div'); d.className = "match-item"; d.style.fontSize="1.1rem"; d.innerText = i.p; 
+            d.onclick = () => { 
+                document.querySelectorAll('#m-right .match-item').forEach(x=>x.style.borderColor='var(--s)'); 
+                d.style.borderColor='var(--p)'; selPy = { val: i.c, el: d }; 
+                checkMatch(); 
+            }; 
+            R.appendChild(d); 
+        });
+    }
+    
+    function checkMatch() { 
+        if(selChar && selPy) { 
+            if(selChar.val === selPy.val) { 
+                // ✨ 关键修改：消除逻辑
+                selChar.el.style.visibility = 'hidden'; // 使汉字格子消失
+                selPy.el.style.visibility = 'hidden';  // 使拼音格子消失
+                matchLeft--; 
+                if(matchLeft === 0) { 
+                    confetti(); showToast("🎉 全部配对成功！"); 
+                    setTimeout(()=>goToPage('page-menu'), 1800); 
+                } 
+            } else { 
+                showToast("❌ 不对哦"); 
+                const c = selChar.el, p = selPy.el;
+                setTimeout(() => { c.style.borderColor = 'var(--s)'; p.style.borderColor = 'var(--s)'; }, 400);
+            } 
+            selChar = null; selPy = null; 
+        } 
+    }
+
+    function renderAdmin() {
+        goToPage('page-admin'); const list = document.getElementById('admin-list'); list.innerHTML = '';
+        db.forEach((u, i) => {
+            const card = document.createElement('div'); card.className = "admin-card"; card.id = `admin-card-${i}`;
+            card.innerHTML = `<div class="admin-card-header" onclick="toggleCard(${i})"><span>📁 ${u.title || '新单元'}</span><span>▼</span></div><div class="admin-card-body"><input id="ad-t-${i}" class="admin-input" value="${u.title}" placeholder="单元名称"><textarea id="ad-c-${i}" class="admin-input" rows="3" placeholder="课文内容">${u.content}</textarea><input id="ad-w-${i}" class="admin-input" value="${u.pickWords}" placeholder="生词 (空格分隔)"><button onclick="askDelete(${i})" style="color:red; background:none; border:none; margin-top:15px; cursor:pointer;">🗑️ 删除单元</button></div>`;
+            list.appendChild(card);
+        });
+    }
+    function toggleCard(i) { const c = document.getElementById(`admin-card-${i}`), isOpen = c.classList.contains('open'); document.querySelectorAll('.admin-card').forEach(x => x.classList.remove('open')); if(!isOpen) c.classList.add('open'); }
+    function askDelete(idx) { delIdx = idx; document.getElementById('confirm-modal').style.display = 'flex'; document.getElementById('confirm-del-btn').onclick = () => { db.splice(delIdx, 1); renderAdmin(); closeConfirm(); }; }
+    function closeConfirm() { document.getElementById('confirm-modal').style.display = 'none'; }
+    function addUnit() { db.push({ title: "新单元", content: "", pickWords: "" }); renderAdmin(); }
+    function saveDB() { db.forEach((u, i) => { u.title = document.getElementById(`ad-t-${i}`).value; u.content = document.getElementById(`ad-c-${i}`).value; u.pickWords = document.getElementById(`ad-w-${i}`).value; }); localStorage.setItem('kssr_v56', JSON.stringify(db)); showToast("✅ 已保存"); renderHome(); goToPage('page-home'); }
+</script>
+</body>
+</html>
